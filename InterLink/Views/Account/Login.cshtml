@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    .il-brand {
+        background: linear-gradient(160deg, #0f2742 0%, #1d4e89 100%);
+        color: #fff;
+    }
+
+    .il-mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: #fff;
+        color: #1d4e89;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 1.15rem;
+    }
+
+    .il-feature {
+        display: flex;
+        gap: .75rem;
+        align-items: flex-start;
+        color: rgba(255,255,255,.85);
+    }
+
+        .il-feature .dot {
+            width: 22px;
+            height: 22px;
+            flex: none;
+            margin-top: 2px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.15);
+            display: grid;
+            place-items: center;
+            font-size: .7rem;
+            color: #fff;
+        }
+
+    .il-form-wrap {
+        max-width: 420px;
+        width: 100%;
+    }
+
+        .il-form-wrap .form-control:focus {
+            border-color: #1d4e89;
+            box-shadow: 0 0 0 .2rem rgba(29,78,137,.2);
+        }
+
+    .il-btn {
+        --bs-btn-bg: #1d4e89;
+        --bs-btn-border-color: #1d4e89;
+        --bs-btn-hover-bg: #163d6c;
+        --bs-btn-hover-border-color: #163d6c;
+        --bs-btn-active-bg: #12335a;
+        --bs-btn-active-border-color: #12335a;
+        --bs-btn-color: #fff;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-color: #fff;
+    }
+
+    .il-chip {
+        --bs-btn-padding-x: 1rem;
+    }
+
+    @@media (max-width: 991.98px) {
+        .il-brand {
+            padding: 2rem 1.5rem !important;
+        }
+
+        .il-features {
+            display: none;
+        }
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <div class="row g-0 min-vh-100">
+
+        <!-- Brand panel -->
+        <div class="col-lg-6 il-brand d-flex flex-column justify-content-center p-5">
+            <div class="mx-auto" style="max-width: 460px;">
+                <div class="il-mark mb-4">IL</div>
+                <h1 class="display-5 fw-bold mb-2">InternLink</h1>
+                <p class="fs-5 mb-5" style="color: rgba(255,255,255,.8);">
+                    Internship Placement and Monitoring System
+                </p>
+
+                <div class="il-features d-grid gap-3">
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Apply for internships in one place</span></div>
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Upload and track your requirements</span></div>
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Log attendance and OJT hours digitally</span></div>
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Get updates and evaluations instantly</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form panel -->
+        <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light p-4 p-md-5">
+            <div class="il-form-wrap">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h2 class="fw-bold mb-1">Welcome back</h2>
+                        <p class="text-muted mb-4">Sign in to continue</p>
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger py-2" role="alert">@ViewBag.Error</div>
+                        }
+
+                        <form method="post" asp-action="Login">
+                            <div class="mb-3">
+                                <label for="username" class="form-label fw-semibold">Username</label>
+                                <input id="username" name="username" class="form-control form-control-lg"
+                                       autocomplete="username" autofocus required />
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-baseline">
+                                    <label for="password" class="form-label fw-semibold">Password</label>
+                                    <a asp-action="ForgotPassword" class="small text-decoration-none">Forgot password?</a>
+                                </div>
+                                <div class="input-group input-group-lg">
+                                    <input id="password" name="password" type="password"
+                                           class="form-control" autocomplete="current-password" required />
+                                    <button type="button" id="togglePw" class="btn btn-outline-secondary fs-6"
+                                            aria-label="Show password">
+                                        Show
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn il-btn btn-lg w-100">Sign in</button>
+                        </form>
+
+                        <p class="text-center text-muted mt-4 mb-0">
+                            No account?
+                            <a asp-action="Register" class="fw-semibold text-decoration-none">Register as a student</a>
+                        </p>
+
+                        <hr class="my-4" />
+
+                        <div>
+                            <small class="text-muted d-block mb-2">Demo accounts (click to fill)</small>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill il-chip demo-chip" data-u="student" data-p="student123">Student</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill il-chip demo-chip" data-u="coordinator" data-p="coord123">Coordinator</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill il-chip demo-chip" data-u="supervisor" data-p="super123">Supervisor</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var pw = document.getElementById('password');
+    var toggle = document.getElementById('togglePw');
+
+    toggle.addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        toggle.textContent = show ? 'Hide' : 'Show';
+        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
+
+    document.querySelectorAll('.demo-chip').forEach(function (b) {
+        b.addEventListener('click', function () {
+            document.getElementById('username').value = b.dataset.u;
+            pw.value = b.dataset.p;
+            pw.focus();
+        });
+    });
+</script>

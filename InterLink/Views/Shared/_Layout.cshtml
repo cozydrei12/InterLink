@@ -1,0 +1,51 @@
+﻿@{
+    var authed = User.Identity?.IsAuthenticated == true;
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - InternLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @if (authed)
+    {
+        <nav class="navbar app-nav mb-4">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                    <span class="brand-mark sm">IL</span> InternLink
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="role-pill">@role</span>
+                    <span class="text-white">@User.Identity!.Name</span>
+                    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-outline-light btn-sm">Change password</a>
+                    <form method="post" asp-controller="Account" asp-action="Logout" class="m-0">
+                        <button class="btn btn-light btn-sm">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    }
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-info app-alert">@TempData["Msg"]</div>
+    }
+
+    <div class="@(authed ? "container pb-5" : "")">
+        @RenderBody()
+    </div>
+
+    <script>
+        setTimeout(function () {
+            document.querySelectorAll('.app-alert').forEach(function (e) { e.remove(); });
+        }, 5000);
+    </script>
+</body>
+</html>

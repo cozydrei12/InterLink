@@ -1,0 +1,151 @@
+{
+  "Users": [
+    {
+      "Id": 1,
+      "Job": 0,
+      "Required": 300,
+      "Name": "Maria Santos",
+      "Username": "coordinator",
+      "Pass": "8C63A2FC2B14D8AE6F9D0BF2E2C4227AC2DC4BD84768E1259226B0C3D84F1C65",
+      "Role": "coordinator",
+      "Company": "",
+      "Program": "",
+      "Question": "What is the name of this system?",
+      "Answer": "B5BFDCC2356D068F81CEE46EAF9C993170B2DE2F299119D6D5145C366F97A819"
+    },
+    {
+      "Id": 2,
+      "Job": 0,
+      "Required": 300,
+      "Name": "John Reyes",
+      "Username": "supervisor",
+      "Pass": "4E4C56E4A15F89F05C2F4C72613DA2A18C9665D4F0D6ACCE16415EB06F9BE776",
+      "Role": "supervisor",
+      "Company": "TechNova Inc.",
+      "Program": "",
+      "Question": "What is the name of this system?",
+      "Answer": "B5BFDCC2356D068F81CEE46EAF9C993170B2DE2F299119D6D5145C366F97A819"
+    },
+    {
+      "Id": 3,
+      "Job": 1,
+      "Required": 300,
+      "Name": "Juan Dela Cruz",
+      "Username": "student",
+      "Pass": "703B0A3D6AD75B649A28ADDE7D83C6251DA457549263BC7FF45EC709B0A8448B",
+      "Role": "student",
+      "Company": "",
+      "Program": "BSIT",
+      "Question": "What is the name of this system?",
+      "Answer": "B5BFDCC2356D068F81CEE46EAF9C993170B2DE2F299119D6D5145C366F97A819"
+    },
+    {
+      "Id": 4,
+      "Job": 2,
+      "Required": 300,
+      "Name": "Luis Andrei Del Castillo",
+      "Username": "dreidrei",
+      "Pass": "A665A45920422F9D417E4867EFDC4FB8A04A1F3FFF1FA07E998E86F7F7A27AE3",
+      "Role": "student",
+      "Company": "",
+      "Program": "BSIT",
+      "Question": "",
+      "Answer": ""
+    }
+  ],
+  "Jobs": [
+    {
+      "Id": 1,
+      "Slots": 3,
+      "Title": "Software Developer Intern",
+      "Company": "TechNova Inc.",
+      "Place": "Cebu City"
+    },
+    {
+      "Id": 2,
+      "Slots": 2,
+      "Title": "IT Support Intern",
+      "Company": "BlueWave Solutions",
+      "Place": "Mandaue City"
+    }
+  ],
+  "Apps": [
+    {
+      "Id": 1,
+      "Student": 4,
+      "Job": 2,
+      "Status": "Accepted"
+    },
+    {
+      "Id": 2,
+      "Student": 3,
+      "Job": 1,
+      "Status": "Accepted"
+    }
+  ],
+  "Docs": [],
+  "Logs": [
+    {
+      "Id": 1,
+      "Student": 4,
+      "In": "2026-11-11T11:26:01.4946417+08:00",
+      "Out": "2026-11-11T11:26:23.4040796+08:00",
+      "Hours": 0.01,
+      "Verified": false
+    },
+    {
+      "Id": 2,
+      "Student": 4,
+      "In": "2026-11-11T11:26:43.4361312+08:00",
+      "Out": null,
+      "Hours": 0,
+      "Verified": false
+    }
+  ],
+  "Reports": [],
+  "Evals": [],
+  "Notes": [
+    {
+      "Id": 1,
+      "User": 1,
+      "Text": "Luis Andrei Del Castillo applied for IT Support Intern at BlueWave Solutions.",
+      "Read": false,
+      "Date": "2026-11-11T11:23:50.8161318+08:00"
+    },
+    {
+      "Id": 2,
+      "User": 4,
+      "Text": "Congratulations! You were accepted for IT Support Intern at BlueWave Solutions.",
+      "Read": true,
+      "Date": "2026-11-11T11:24:53.4987905+08:00"
+    },
+    {
+      "Id": 3,
+      "User": 1,
+      "Text": "Juan Dela Cruz applied for Software Developer Intern at TechNova Inc..",
+      "Read": false,
+      "Date": "2026-11-11T11:33:21.0908313+08:00"
+    },
+    {
+      "Id": 4,
+      "User": 3,
+      "Text": "Congratulations! You were accepted for Software Developer Intern at TechNova Inc..",
+      "Read": false,
+      "Date": "2026-11-11T11:33:27.5606836+08:00"
+    },
+    {
+      "Id": 5,
+      "User": 3,
+      "Text": "[Announcement] ANNOUNCEMENT!!!!! WALAY OJT RON!!!!!",
+      "Read": false,
+      "Date": "2026-11-11T11:42:08.0990515+08:00"
+    },
+    {
+      "Id": 6,
+      "User": 4,
+      "Text": "[Announcement] ANNOUNCEMENT!!!!! WALAY OJT RON!!!!!",
+      "Read": true,
+      "Date": "2026-11-11T11:42:08.1003016+08:00"
+    }
+  ]
+}

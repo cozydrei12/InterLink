@@ -1,0 +1,127 @@
+﻿@model AppUser
+@inject Store S
+@{
+    ViewData["Title"] = "Coordinator";
+    var notes = S.D.Notes.Where(n => n.User == Model.Id).OrderByDescending(n => n.Date).Take(10).ToList();
+}
+<h3>Coordinator Dashboard</h3>
+
+<div class="card mb-4">
+    <div class="card-header">Student Placement, Requirements, Hours, and Evaluations</div>
+    <table class="table mb-0">
+        <tr><th>Student</th><th>Program</th><th>Placement</th><th>Docs approved</th><th>Verified hours</th><th>Evaluation</th></tr>
+        @foreach (var s in S.D.Users.Where(u => u.Role == "student"))
+        {
+            var ok = S.D.Docs.Where(d => d.Student == s.Id && d.Status == "Approved").Select(d => d.Name).Distinct().Count();
+            var ev = S.D.Evals.LastOrDefault(e => e.Student == s.Id);
+            var pj = S.J(s.Job);
+            <tr>
+                <td>@s.Name</td>
+                <td>@s.Program</td>
+                <td>@(pj == null ? "Not placed" : pj.Title + " - " + pj.Company)</td>
+                <td>@ok / @Store.Req.Length</td>
+                <td>@S.Hrs(s.Id) / @s.Required</td>
+                <td>@(ev == null ? "-" : ev.Score + "/100")</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Pending Applications</div>
+    <table class="table mb-0">
+        @foreach (var a in S.D.Apps.Where(q => q.Status == "Pending"))
+        {
+            <tr>
+                <td>@(S.U(a.Student)!.Name)</td>
+                <td>@(S.J(a.Job)!.Title) - @(S.J(a.Job)!.Company)</td>
+                <td>
+                    <form method="post" asp-action="Decide" asp-route-id="@a.Id" class="m-0">
+                        <button name="accept" value="true" class="btn btn-sm btn-success">Accept</button>
+                        <button name="accept" value="false" class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Documents Awaiting Review</div>
+    <table class="table mb-0">
+        @foreach (var d in S.D.Docs.Where(q => q.Status == "Submitted"))
+        {
+            <tr>
+                <td>@(S.U(d.Student)!.Name)</td>
+                <td><a href="@d.FilePath" target="_blank">@d.Name</a></td>
+                <td>
+                    <form method="post" asp-action="ReviewDoc" asp-route-id="@d.Id" class="d-flex gap-1 m-0">
+                        <input name="remarks" class="form-control form-control-sm" placeholder="Remarks (optional)" />
+                        <button name="approve" value="true" class="btn btn-sm btn-success">Approve</button>
+                        <button name="approve" value="false" class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">Add Internship</div>
+            <form method="post" asp-action="AddJob" class="card-body">
+                <input name="title" class="form-control mb-2" placeholder="Title" required />
+                <input name="company" class="form-control mb-2" placeholder="Company" required />
+                <input name="place" class="form-control mb-2" placeholder="Location" />
+                <input name="slots" type="number" min="1" value="1" class="form-control mb-2" />
+                <button class="btn btn-primary">Add</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">Announcements and Reminders</div>
+            <div class="card-body">
+                <form method="post" asp-action="Announce" class="mb-3">
+                    <textarea name="message" class="form-control mb-2" rows="2" placeholder="Announcement for all students"></textarea>
+                    <button class="btn btn-primary">Send announcement</button>
+                </form>
+                <form method="post" asp-action="Remind" class="m-0">
+                    <button class="btn btn-warning">Remind students with missing requirements</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Student Reports</div>
+    <div class="card-body">
+        @foreach (var rp in S.D.Reports.OrderByDescending(q => q.Date))
+        {
+            <div class="border-bottom pb-2 mb-2"><strong>@(S.U(rp.Student)!.Name): @rp.Title</strong><br />@rp.Text</div>
+        }
+        @if (!S.D.Reports.Any())
+        {
+            <span class="text-muted">No reports yet.</span>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        Notifications
+        <form method="post" asp-controller="Account" asp-action="MarkRead" class="m-0"><button class="btn btn-sm btn-outline-secondary">Mark all read</button></form>
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (var n in notes)
+        {
+            <li class="list-group-item @(n.Read ? "" : "fw-bold")">@n.Date.ToString("MMM dd hh:mm tt") - @n.Text</li>
+        }
+        @if (!notes.Any())
+        {
+            <li class="list-group-item text-muted">No notifications.</li>
+        }
+    </ul>
+</div>

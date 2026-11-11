@@ -1,0 +1,193 @@
+﻿@using InterLink.Models
+@{
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    .il-brand {
+        background: linear-gradient(160deg, #0f2742 0%, #1d4e89 100%);
+        color: #fff;
+    }
+
+    .il-mark {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        background: #fff;
+        color: #1d4e89;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        font-size: 1.15rem;
+    }
+
+    .il-feature {
+        display: flex;
+        gap: .75rem;
+        align-items: flex-start;
+        color: rgba(255,255,255,.85);
+    }
+
+        .il-feature .dot {
+            width: 22px;
+            height: 22px;
+            flex: none;
+            margin-top: 2px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.15);
+            display: grid;
+            place-items: center;
+            font-size: .7rem;
+            color: #fff;
+        }
+
+    .il-form-wrap {
+        max-width: 460px;
+        width: 100%;
+    }
+
+        .il-form-wrap .form-control:focus,
+        .il-form-wrap .form-select:focus {
+            border-color: #1d4e89;
+            box-shadow: 0 0 0 .2rem rgba(29,78,137,.2);
+        }
+
+    .il-btn {
+        --bs-btn-bg: #1d4e89;
+        --bs-btn-border-color: #1d4e89;
+        --bs-btn-hover-bg: #163d6c;
+        --bs-btn-hover-border-color: #163d6c;
+        --bs-btn-active-bg: #12335a;
+        --bs-btn-active-border-color: #12335a;
+        --bs-btn-color: #fff;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-color: #fff;
+    }
+
+    @@media (max-width: 991.98px) {
+        .il-brand {
+            padding: 2rem 1.5rem !important;
+        }
+
+        .il-features {
+            display: none;
+        }
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <div class="row g-0 min-vh-100">
+
+        <!-- Brand panel -->
+        <div class="col-lg-5 il-brand d-flex flex-column justify-content-center p-5">
+            <div class="mx-auto" style="max-width: 420px;">
+                <div class="il-mark mb-4">IL</div>
+                <h1 class="display-5 fw-bold mb-2">Join InternLink</h1>
+                <p class="fs-5 mb-5" style="color: rgba(255,255,255,.8);">
+                    Create your student account and start your internship journey.
+                </p>
+
+                <div class="il-features d-grid gap-3">
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Search and apply for internships</span></div>
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Submit requirements online</span></div>
+                    <div class="il-feature"><span class="dot">&#10003;</span><span>Track your OJT hours and progress</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form panel -->
+        <div class="col-lg-7 d-flex align-items-center justify-content-center bg-light p-4 p-md-5">
+            <div class="il-form-wrap">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4 p-md-5">
+
+                        <h2 class="fw-bold mb-1">Create account</h2>
+                        <p class="text-muted mb-4">Student registration</p>
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger py-2" role="alert">@ViewBag.Error</div>
+                        }
+
+                        <form method="post" asp-action="Register">
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label fw-semibold">Full name</label>
+                                    <input id="name" name="name" class="form-control form-control-lg"
+                                           autocomplete="name" required />
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="program" class="form-label fw-semibold">Program / Course</label>
+                                    <input id="program" name="program" class="form-control form-control-lg" />
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="username" class="form-label fw-semibold">Username</label>
+                                    <input id="username" name="username" class="form-control form-control-lg"
+                                           autocomplete="username" required />
+                                </div>
+
+                                <div class="col-12">
+                                    <label for="password" class="form-label fw-semibold">Password</label>
+                                    <div class="input-group input-group-lg">
+                                        <input id="password" name="password" type="password"
+                                               class="form-control" minlength="6"
+                                               autocomplete="new-password" required />
+                                        <button type="button" id="togglePw" class="btn btn-outline-secondary fs-6"
+                                                aria-label="Show password">
+                                            Show
+                                        </button>
+                                    </div>
+                                    <div class="form-text">At least 6 characters.</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" />
+
+                            <p class="fw-semibold mb-1">Password recovery</p>
+                            <p class="text-muted small mb-3">You'll use this if you forget your password.</p>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-12">
+                                    <label for="question" class="form-label fw-semibold">Security question</label>
+                                    <select id="question" name="question" class="form-select form-select-lg">
+                                        @foreach (var q in Store.Questions)
+                                        {
+                                            <option>@q</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="answer" class="form-label fw-semibold">Your answer</label>
+                                    <input id="answer" name="answer" class="form-control form-control-lg" required />
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn il-btn btn-lg w-100">Create account</button>
+                        </form>
+
+                        <p class="text-center text-muted mt-4 mb-0">
+                            Already have an account?
+                            <a asp-action="Login" class="fw-semibold text-decoration-none">Sign in</a>
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var pw = document.getElementById('password');
+    var toggle = document.getElementById('togglePw');
+
+    toggle.addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        toggle.textContent = show ? 'Hide' : 'Show';
+        toggle.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    });
+</script>

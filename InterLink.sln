@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37531.7 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterLink", "InterLink\InterLink.csproj", "{942045CB-2FB3-4F3D-82D7-F75E312AB348}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{942045CB-2FB3-4F3D-82D7-F75E312AB348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{942045CB-2FB3-4F3D-82D7-F75E312AB348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{942045CB-2FB3-4F3D-82D7-F75E312AB348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{942045CB-2FB3-4F3D-82D7-F75E312AB348}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCF71D70-DD1E-478B-BB59-A86EB170DFD8}
+	EndGlobalSection
+EndGlobal

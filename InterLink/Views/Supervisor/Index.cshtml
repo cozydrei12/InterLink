@@ -1,0 +1,79 @@
+﻿@model AppUser
+@inject Store S
+@{
+    ViewData["Title"] = "Supervisor";
+    var interns = S.Interns(Model).ToList();
+    var ids = interns.Select(i => i.Id).ToList();
+    var pending = S.D.Logs.Where(l => ids.Contains(l.Student) && l.Out != null && !l.Verified).ToList();
+    var notes = S.D.Notes.Where(n => n.User == Model.Id).OrderByDescending(n => n.Date).Take(10).ToList();
+}
+<h3>Supervisor: @Model.Name <small class="text-muted">@Model.Company</small></h3>
+
+<div class="card mb-4">
+    <div class="card-header">My Interns</div>
+    <table class="table mb-0">
+        <tr><th>Name</th><th>Program</th><th>Verified hours</th></tr>
+        @foreach (var i in interns)
+        {
+            <tr><td>@i.Name</td><td>@i.Program</td><td>@S.Hrs(i.Id) / @i.Required</td></tr>
+        }
+        @if (!interns.Any())
+        {
+            <tr><td colspan="3" class="text-muted">No interns placed at your company yet.</td></tr>
+        }
+    </table>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        Attendance Awaiting Verification
+        <form method="post" asp-action="VerifyAll" class="m-0"><button class="btn btn-sm btn-success">Verify all</button></form>
+    </div>
+    <table class="table mb-0">
+        @foreach (var l in pending)
+        {
+            <tr>
+                <td>@(S.U(l.Student)!.Name)</td>
+                <td>@l.In.ToString("MMM dd hh:mm tt") - @(l.Out!.Value.ToString("hh:mm tt"))</td>
+                <td>@l.Hours hr</td>
+                <td><form method="post" asp-action="Verify" asp-route-id="@l.Id" class="m-0"><button class="btn btn-sm btn-success">Verify</button></form></td>
+            </tr>
+        }
+        @if (!pending.Any())
+        {
+            <tr><td class="text-muted">Nothing to verify.</td></tr>
+        }
+    </table>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Evaluate an Intern</div>
+    <form method="post" asp-action="Evaluate" class="card-body">
+        <select name="student" class="form-select mb-2">
+            @foreach (var i in interns)
+            {
+                <option value="@i.Id">@i.Name</option>
+            }
+        </select>
+        <input name="score" type="number" min="0" max="100" class="form-control mb-2" placeholder="Score (0-100)" required />
+        <textarea name="comments" class="form-control mb-2" rows="2" placeholder="Comments"></textarea>
+        <button class="btn btn-primary">Save evaluation</button>
+    </form>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        Notifications
+        <form method="post" asp-controller="Account" asp-action="MarkRead" class="m-0"><button class="btn btn-sm btn-outline-secondary">Mark all read</button></form>
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (var n in notes)
+        {
+            <li class="list-group-item @(n.Read ? "" : "fw-bold")">@n.Date.ToString("MMM dd hh:mm tt") - @n.Text</li>
+        }
+        @if (!notes.Any())
+        {
+            <li class="list-group-item text-muted">No notifications.</li>
+        }
+    </ul>
+</div>

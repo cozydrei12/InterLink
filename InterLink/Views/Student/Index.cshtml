@@ -1,0 +1,389 @@
+﻿@model AppUser
+@inject Store S
+@{
+    ViewData["Title"] = "Student";
+    var me = Model;
+    var placed = S.J(me.Job);
+    var missing = Store.Req.Where(r => !S.D.Docs.Any(d => d.Student == me.Id && d.Name == r && d.Status != "Rejected")).ToList();
+    var isOpen = S.D.Logs.Any(l => l.Student == me.Id && l.Out == null);
+    var hrs = S.Hrs(me.Id);
+    var pct = Math.Min(100, (int)(hrs * 100 / me.Required));
+    var notes = S.D.Notes.Where(n => n.User == me.Id).OrderByDescending(n => n.Date).Take(10).ToList();
+
+    var unread = notes.Count(n => !n.Read);
+    var reqTotal = Store.Req.Count();
+    var reqDone = reqTotal - missing.Count;
+
+    Func<string?, string> badge = s => (s ?? "").ToLower() switch
+    {
+        "approved" or "accepted" or "verified" or "placed" => "text-bg-success",
+        "rejected" or "declined" => "text-bg-danger",
+        "pending" or "ongoing" => "text-bg-warning",
+        _ => "text-bg-secondary"
+    };
+}
+
+<style>
+    body {
+        background: #f4f6f9;
+    }
+
+    .il-hero {
+        background: linear-gradient(160deg, #0f2742 0%, #1d4e89 100%);
+        color: #fff;
+    }
+
+        .il-hero .sub {
+            color: rgba(255,255,255,.8);
+        }
+
+    .il-card {
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px rgba(16,24,40,.08);
+    }
+
+        .il-card .card-header {
+            background: transparent;
+            border: 0;
+            padding: 1.1rem 1.25rem .25rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .il-card .table {
+            --bs-table-bg: transparent;
+        }
+
+            .il-card .table th {
+                font-size: .8rem;
+                font-weight: 600;
+                color: #6b7785;
+                border-bottom-width: 1px;
+                white-space: nowrap;
+            }
+
+    .il-stat-label {
+        font-size: .85rem;
+        color: #6b7785;
+    }
+
+    .il-stat-value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #0f2742;
+        line-height: 1.2;
+    }
+
+    .il-progress {
+        height: 10px;
+        border-radius: 99px;
+        background: #e6ebf1;
+    }
+
+        .il-progress .progress-bar {
+            background: #1d4e89;
+            border-radius: 99px;
+        }
+
+    .il-btn {
+        --bs-btn-bg: #1d4e89;
+        --bs-btn-border-color: #1d4e89;
+        --bs-btn-color: #fff;
+        --bs-btn-hover-bg: #163d6c;
+        --bs-btn-hover-border-color: #163d6c;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-bg: #12335a;
+        --bs-btn-active-border-color: #12335a;
+        --bs-btn-active-color: #fff;
+        --bs-btn-disabled-bg: #1d4e89;
+        --bs-btn-disabled-border-color: #1d4e89;
+    }
+
+    .il-card .form-control:focus, .il-card .form-select:focus {
+        border-color: #1d4e89;
+        box-shadow: 0 0 0 .2rem rgba(29,78,137,.2);
+    }
+
+    .il-note {
+        display: flex;
+        gap: .75rem;
+        padding: .75rem 1.25rem;
+        border-top: 1px solid #eef1f5;
+    }
+
+        .il-note:first-child {
+            border-top: 0;
+        }
+
+    .il-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #1d4e89;
+        flex: none;
+        margin-top: .5rem;
+    }
+
+        .il-dot.read {
+            background: transparent;
+        }
+
+    .il-note .when {
+        font-size: .78rem;
+        color: #8592a0;
+    }
+
+    .il-empty {
+        padding: 1.25rem;
+        color: #8592a0;
+        text-align: center;
+    }
+
+    .il-report {
+        border-top: 1px solid #eef1f5;
+        padding: .85rem 0;
+    }
+
+        .il-report:first-child {
+            border-top: 0;
+        }
+</style>
+
+<!-- Welcome -->
+<div class="il-hero rounded-4 p-4 p-md-5 mb-4">
+    <h3 class="fw-bold mb-1">Welcome, @me.Name</h3>
+    @if (placed == null)
+    {
+        <p class="sub mb-0">Not placed yet. Apply for an internship below.</p>
+    }
+    else
+    {
+        <p class="sub mb-0">
+            <span class="badge text-bg-success me-2">Placed</span>@placed.Title - @placed.Company
+        </p>
+    }
+</div>
+
+<!-- Summary -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card il-card h-100">
+            <div class="card-body">
+                <div class="il-stat-label">OJT hours</div>
+                <div class="il-stat-value">@hrs <span class="fs-6 fw-normal text-muted">/ @me.Required hrs</span></div>
+                <div class="progress il-progress mt-2"><div class="progress-bar" style="width:@(pct)%"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card il-card h-100">
+            <div class="card-body">
+                <div class="il-stat-label">Requirements submitted</div>
+                <div class="il-stat-value">@reqDone <span class="fs-6 fw-normal text-muted">of @reqTotal</span></div>
+                <div class="small mt-2 @(missing.Any() ? "text-warning-emphasis" : "text-success")">
+                    @(missing.Any() ? missing.Count + " still missing" : "All requirements submitted")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card il-card h-100">
+            <div class="card-body">
+                <div class="il-stat-label">Notifications</div>
+                <div class="il-stat-value">@unread <span class="fs-6 fw-normal text-muted">unread</span></div>
+                <div class="small text-muted mt-2">@(isOpen ? "You are currently timed in." : "You are not timed in.")</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+
+    <!-- Main column -->
+    <div class="col-lg-8">
+
+        <div class="card il-card mb-4">
+            <div class="card-header">Available Internships</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead><tr><th class="ps-3">Title</th><th>Company</th><th>Location</th><th>Slots left</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var j in S.D.Jobs)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-semibold">@j.Title</td>
+                                <td>@j.Company</td>
+                                <td>@j.Place</td>
+                                <td><span class="badge text-bg-light border">@S.Slots(j)</span></td>
+                                <td class="text-end pe-3">
+                                    <form method="post" asp-action="Apply" asp-route-id="@j.Id" class="m-0">
+                                        <button class="btn btn-sm il-btn" disabled="@(me.Job != 0)">Apply</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!S.D.Jobs.Any())
+            {
+                <div class="il-empty">No internships are available right now.</div>
+            }
+        </div>
+
+        <div class="card il-card mb-4">
+            <div class="card-header">My Applications</div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <tbody>
+                        @foreach (var a in S.D.Apps.Where(q => q.Student == me.Id))
+                        {
+                            <tr>
+                                <td class="ps-3">@(S.J(a.Job)!.Title) - @(S.J(a.Job)!.Company)</td>
+                                <td class="text-end pe-3"><span class="badge @badge(a.Status)">@a.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (!S.D.Apps.Any(q => q.Student == me.Id))
+            {
+                <div class="il-empty">You haven't applied to any internships yet.</div>
+            }
+        </div>
+
+        <div class="card il-card mb-4">
+            <div class="card-header">Requirements</div>
+            <div class="card-body">
+                <form method="post" asp-action="Upload" enctype="multipart/form-data" class="row g-2 mb-3">
+                    <div class="col-md-4">
+                        <select name="name" class="form-select">
+                            @foreach (var r in Store.Req)
+                            {
+                                <option>@r</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-5"><input type="file" name="file" class="form-control" required /></div>
+                    <div class="col-md-3"><button class="btn il-btn w-100">Upload</button></div>
+                </form>
+
+                @if (missing.Any())
+                {
+                    <div class="alert alert-warning py-2">Missing: @(string.Join(", ", missing))</div>
+                }
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead><tr><th>Requirement</th><th>Status</th><th>Remarks</th><th>File</th></tr></thead>
+                        <tbody>
+                            @foreach (var d in S.D.Docs.Where(q => q.Student == me.Id))
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@d.Name</td>
+                                    <td><span class="badge @badge(d.Status)">@d.Status</span></td>
+                                    <td>@d.Remarks</td>
+                                    <td><a href="@d.FilePath" target="_blank" class="text-decoration-none">View</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (!S.D.Docs.Any(q => q.Student == me.Id))
+                {
+                    <div class="il-empty">No files uploaded yet.</div>
+                }
+            </div>
+        </div>
+
+        <div class="card il-card mb-4">
+            <div class="card-header">Internship Reports</div>
+            <div class="card-body">
+                <form method="post" asp-action="Report" class="mb-3">
+                    <input name="title" class="form-control mb-2" placeholder="Report title" required />
+                    <textarea name="text" class="form-control mb-2" rows="3" placeholder="Report content" required></textarea>
+                    <button class="btn il-btn">Submit report</button>
+                </form>
+                @foreach (var rp in S.D.Reports.Where(q => q.Student == me.Id))
+                {
+                    <div class="il-report">
+                        <strong>@rp.Title</strong>
+                        <small class="text-muted ms-1">@rp.Date.ToString("MMM dd")</small>
+                        <div class="mt-1">@rp.Text</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Side column -->
+    <div class="col-lg-4">
+
+        <div class="card il-card mb-4">
+            <div class="card-header">Attendance and OJT Hours</div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span class="text-muted">Progress</span>
+                    <span class="fw-semibold">@hrs / @me.Required hrs</span>
+                </div>
+                <div class="progress il-progress mb-3"><div class="progress-bar" style="width:@(pct)%"></div></div>
+
+                <form method="post" class="d-flex gap-2 mb-3">
+                    <button asp-action="TimeIn" class="btn btn-success flex-fill" disabled="@(me.Job == 0 || isOpen)">Time in</button>
+                    <button asp-action="TimeOut" class="btn btn-danger flex-fill" disabled="@(!isOpen)">Time out</button>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead><tr><th>Date / time in</th><th>Hours</th><th>Status</th></tr></thead>
+                        <tbody>
+                            @foreach (var l in S.D.Logs.Where(q => q.Student == me.Id).TakeLast(10).Reverse())
+                            {
+                                <tr>
+                                    <td>@l.In.ToString("MMM dd hh:mm tt")</td>
+                                    <td>@l.Hours</td>
+                                    <td><span class="badge @(l.Out == null ? "text-bg-warning" : l.Verified ? "text-bg-success" : "text-bg-secondary")">@(l.Out == null ? "Ongoing" : l.Verified ? "Verified" : "Pending")</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (!S.D.Logs.Any(q => q.Student == me.Id))
+                {
+                    <div class="il-empty">No attendance logged yet.</div>
+                }
+            </div>
+        </div>
+
+        <div class="card il-card mb-4">
+            <div class="card-header">
+                Notifications
+                <form method="post" asp-controller="Account" asp-action="MarkRead" class="m-0">
+                    <button class="btn btn-sm btn-outline-secondary">Mark all read</button>
+                </form>
+            </div>
+            <div class="pt-2 pb-2">
+                @foreach (var n in notes)
+                {
+                    <div class="il-note">
+                        <span class="il-dot @(n.Read ? "read" : "")"></span>
+                        <div>
+                            <div class="@(n.Read ? "" : "fw-semibold")">@n.Text</div>
+                            <div class="when">@n.Date.ToString("MMM dd hh:mm tt")</div>
+                        </div>
+                    </div>
+                }
+                @if (!notes.Any())
+                {
+                    <div class="il-empty">No notifications.</div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
